@@ -13,7 +13,14 @@
 
 use Illuminate\Support\Facades\Route;
 Route::group(['namespace'=>'Web'],function (){
-    Route::group(['prefix'=>'admin'],function (){
-        Route::get('index','AdminController@index');
-    });
+//    Route::group(['prefix'=>'admin'],function (){
+//        Route::get('index','AdminController@index');
+//        Route::get('create','AdminController@create');
+//    });
+    Route::get('autocomplete','AutoCompleteController@index');
+    Route::get('autocomplete/search','AutoCompleteController@search');
 });
+//Route::get('/{any}', 'SpaController@index')->where('any', '.*');
+//Route::get('/users', function () {
+//    return factory('App\User', 10)->make();
+//});
