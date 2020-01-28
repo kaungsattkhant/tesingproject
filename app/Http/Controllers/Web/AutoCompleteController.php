@@ -18,4 +18,7 @@ class AutoCompleteController extends Controller
 //        dd($items);
         return response()->json($items);
     }
+    public function store(Request $request){
+        dd($request->all());
+    }
 }

@@ -19,6 +19,7 @@ Route::group(['namespace'=>'Web'],function (){
 //    });
     Route::get('autocomplete','AutoCompleteController@index');
     Route::get('autocomplete/search','AutoCompleteController@search');
+    Route::post('autocomplete/send','AutoCompleteController@store');
 });
 //Route::get('/{any}', 'SpaController@index')->where('any', '.*');
 //Route::get('/users', function () {
