@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
-
+use Faker\Factory as  Faker;
 class ItemTableSeeder extends Seeder
 {
     /**
@@ -12,10 +12,12 @@ class ItemTableSeeder extends Seeder
      */
     public function run()
     {
-        for($i=0;$i<=10;$i++){
-            \App\Item::create([
-                'name'=>Str::random(5),
+        $faker=Faker::create();
+        foreach(range(1,20) as $index){
+            \App\Model\Item::create([
+                'name'=>$faker->word,
             ]);
-         }
+
+        }
     }
 }

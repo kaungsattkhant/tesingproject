@@ -13,12 +13,19 @@ class AutoCompleteController extends Controller
     }
     public function search(Request $request)
     {
-//        return response()->json($request->all());
         $items = \App\Model\Item::where('name','LIKE',$request->search.'%')->get();
-//        dd($items);
-        return response()->json($items);
+        if($items->isNotEmpty()){
+                return response()->json([
+                'is_success'=>true,
+                      'items'=>$items
+                ]);
+        }else{
+            return response()->json([
+                'is_success'=>false,
+            ]);
+        }
     }
     public function store(Request $request){
-        dd($request->all());
+//        dd($request->all());
     }
 }

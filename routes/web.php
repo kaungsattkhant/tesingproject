@@ -20,6 +20,15 @@ Route::group(['namespace'=>'Web'],function (){
     Route::get('autocomplete','AutoCompleteController@index');
     Route::get('autocomplete/search','AutoCompleteController@search');
     Route::post('autocomplete/send','AutoCompleteController@store');
+    Route::group(['prefix'=>'student'],function (){
+       Route::get('/','StudentController@index');
+       Route::post('store','StudentController@store');
+       Route::get('get_data','StudentController@getData');
+       Route::get('/search','StudentController@searchName');
+       Route::get('{id}/edit','StudentController@edit');
+       Route::get('/delete','StudentController@destroy');
+       Route::post('/update/{id}','StudentController@update');
+    });
 });
 //Route::get('/{any}', 'SpaController@index')->where('any', '.*');
 //Route::get('/users', function () {

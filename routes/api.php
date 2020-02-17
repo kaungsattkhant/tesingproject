@@ -17,9 +17,9 @@ use Illuminate\Http\Request;
 //    return $request->user();
 //});
 use Illuminate\Support\Facades\Route;
-Route::get('/users', function () {
-    if (rand(1, 10) < 7) {
-        abort(500, 'We could not retrieve the users');
-    }
-    return factory('App\User', 10)->make();
-});
+//Route::get('/users', function () {
+//    if (rand(1, 10) < 7) {
+//        abort(500, 'We could not retrieve the users');
+//    }
+//    return factory('App\User', 10)->make();
+//});

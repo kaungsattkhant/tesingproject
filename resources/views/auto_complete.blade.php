@@ -12,20 +12,19 @@
             <div class="col-sm-8">
                 <h1>Building an Autocomplete Component with Vue.js and PHP Laravel 5.6</h1>
                 <div class="panel panel-primary">
-                    <form action="{{url('autocomplete/send')}}" method="post">
-                        @csrf
+{{--                    <form  >--}}
                         <div class="panel-heading">Please type here in text box to get search data</div>
                         <div class="panel-body">
                             <div class="form-group">
                                 <autocomplete></autocomplete>
                             </div>
                             <div class="form-group">
-                                <button class="btn btn-primary" type="submit"> Send...</button>
+{{--                                <button class="btn btn-primary" > Send...</button>--}}
                             </div>
                         </div>
 
 {{--                        </div>--}}
-                    </form>
+{{--                    </form>--}}
                 </div>
             </div>
         </div>
