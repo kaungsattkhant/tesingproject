@@ -21,37 +21,48 @@ class StudentController extends Controller
 //        return response()->json($data);
     }
     public function store(Request $request){
-//        return $request->all();
+//        return response()->json($request->email);
 //        dd($request->all());
-//        $vd=Validator::make($request->all(),[
-//            'name'=>'required',
-//            'student_id'=>'required',
-//            'email'=>'required',
-//            'password'=>'required',
-//            'photo'=>'required',
-//        ]);
-        $vd=$this->validate($request,[
+        $vd=Validator::make($request->all(),[
             'name'=>'required',
             'student_id'=>'required',
             'email'=>'required',
             'password'=>'required',
             'photo'=>'required',
-            'major'=>'required',
         ]);
-//        if($vd->passes()){
+//        $vd=$this->validate($request,[
+//            'name'=>'required',
+//            'student_id'=>'required',
+//            'email'=>'required',
+//            'password'=>'required',
+//            'photo'=>'required',
+//            'major'=>'required',
+//        ]);
+        $photo=$request->file('photo');
+        if($photo){
+            $photoname=time().'.'.$photo->getClientOriginalExtension();
+            $destination_path=storage_path('/image');
+            $photo->move($destination_path,$photoname);
+        }
+        if($vd->passes()){
             $st=Student::create([
                 'student_id'=>$request->student_id,
                 'name'=>$request->name,
-                'major'=>$request->major,
+                'email'=>$request->email,
+                'password'=>bcrypt($request->password),
+                'photo'=>$photoname,
+                'major_id'=>$request->major,
+                'address'=>'Mandalay/Myitenge',
             ]);
             return response()->json([
                 'is_success'=>true,
             ]);
-//        }
-//        else  return response()->json([
-////                'is_success'=>false,
-////                'errors'=>$vd->errors(),
-////            ]);
+        }
+        else
+            return response()->json([
+                'is_success'=>false,
+                'errors'=>$vd->errors(),
+            ]);
 //
 
     }

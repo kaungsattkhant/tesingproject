@@ -1981,13 +1981,31 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['majors'],
+  props: {
+    majors: {}
+  },
   data: function data() {
     return {
       editForm: false,
       students: [],
+      formError: [],
+      checkError: false,
       student: {
         student_id: '',
         name: '',
@@ -2013,11 +2031,12 @@ __webpack_require__.r(__webpack_exports__);
 
       formData.append('photo', this.student.photo);
       formData.append('name', this.student.name);
+      formData.append('major', this.student.major);
       formData.append('student_id', this.student.student_id);
       formData.append('email', this.student.email);
       formData.append('password', this.student.password);
       var vm = this; // var data=this.student;
-      // console.log(data);
+      // console.log(formData);
 
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('/student/store', formData, {
         headers: {
@@ -2025,9 +2044,17 @@ __webpack_require__.r(__webpack_exports__);
           "Content-type": "multipart/form-data, charset=utf-8; boundary=" + Math.random().toString().substr(2)
         }
       }).then(function (response) {
-        console.log(response.data);
+        // console.log(response.data.errors);
+        if (response.data.is_success == false) {
+          vm.checkError = true;
+          vm.formError = response.data.errors; // alert(vm.formError.name)
+          // console.log('Error is '  + vm.formError.name);
+        }
+      }, function (response) {// console.log(response);
+      })["catch"](function (error) {// console.log(error.response.data);
       });
-    }
+    },
+    update: function update() {}
   },
   mounted: function mounted() {
     console.log('mounted');
@@ -2655,7 +2682,29 @@ var render = function() {
                     _vm.$set(_vm.student, "student_id", $event.target.value)
                   }
                 }
-              })
+              }),
+              _vm._v(" "),
+              _c(
+                "span",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.checkError,
+                      expression: "checkError"
+                    }
+                  ],
+                  staticClass: "text-danger"
+                },
+                [
+                  _vm._v(
+                    "\n                        " +
+                      _vm._s(_vm.formError.student_id) +
+                      "\n                    "
+                  )
+                ]
+              )
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "form-group " }, [
@@ -2683,7 +2732,29 @@ var render = function() {
                     _vm.$set(_vm.student, "name", $event.target.value)
                   }
                 }
-              })
+              }),
+              _vm._v(" "),
+              _c(
+                "span",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.checkError,
+                      expression: "checkError"
+                    }
+                  ],
+                  staticClass: "text-danger"
+                },
+                [
+                  _vm._v(
+                    "\n                        " +
+                      _vm._s(_vm.formError.name) +
+                      "\n                    "
+                  )
+                ]
+              )
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "form-group " }, [
@@ -2711,7 +2782,29 @@ var render = function() {
                     _vm.$set(_vm.student, "email", $event.target.value)
                   }
                 }
-              })
+              }),
+              _vm._v(" "),
+              _c(
+                "span",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.checkError,
+                      expression: "checkError"
+                    }
+                  ],
+                  staticClass: "text-danger"
+                },
+                [
+                  _vm._v(
+                    "\n                        " +
+                      _vm._s(_vm.formError.email) +
+                      "\n                    "
+                  )
+                ]
+              )
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "form-group" }, [
@@ -2756,6 +2849,28 @@ var render = function() {
                   ])
                 }),
                 0
+              ),
+              _vm._v(" "),
+              _c(
+                "span",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.checkError,
+                      expression: "checkError"
+                    }
+                  ],
+                  staticClass: "text-danger"
+                },
+                [
+                  _vm._v(
+                    "\n                        " +
+                      _vm._s(_vm.formError.major) +
+                      "\n                    "
+                  )
+                ]
               )
             ]),
             _vm._v(" "),
@@ -2774,7 +2889,7 @@ var render = function() {
                   }
                 ],
                 staticClass: "form-control input-sm",
-                attrs: { type: "text", name: "password" },
+                attrs: { type: "password", name: "password" },
                 domProps: { value: _vm.student.password },
                 on: {
                   input: function($event) {
@@ -2784,7 +2899,29 @@ var render = function() {
                     _vm.$set(_vm.student, "password", $event.target.value)
                   }
                 }
-              })
+              }),
+              _vm._v(" "),
+              _c(
+                "span",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.checkError,
+                      expression: "checkError"
+                    }
+                  ],
+                  staticClass: "text-danger"
+                },
+                [
+                  _vm._v(
+                    "\n                        " +
+                      _vm._s(_vm.formError.password) +
+                      "\n                    "
+                  )
+                ]
+              )
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "form-group " }, [
@@ -2801,7 +2938,29 @@ var render = function() {
                     return _vm.chooseFile()
                   }
                 }
-              })
+              }),
+              _vm._v(" "),
+              _c(
+                "span",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.checkError,
+                      expression: "checkError"
+                    }
+                  ],
+                  staticClass: "text-danger"
+                },
+                [
+                  _vm._v(
+                    "\n                        " +
+                      _vm._s(_vm.formError.photo) +
+                      "\n                    "
+                  )
+                ]
+              )
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "form-group  " }, [
@@ -2816,9 +2975,7 @@ var render = function() {
                       expression: "!editForm"
                     }
                   ],
-                  staticClass: "btn btn-success  ",
-                  attrs: { type: "submit" },
-                  on: { click: _vm.store }
+                  staticClass: "btn btn-success "
                 },
                 [_vm._v("Create..")]
               )

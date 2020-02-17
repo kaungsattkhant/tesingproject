@@ -6,36 +6,50 @@
                     <div class="form-group ">
                         <label for="inputPassword6">Student_Id</label>
                         <input class="form-control input-sm" type="text" v-model="student.student_id" name="student_id">
-
+                        <span class="text-danger" v-show="checkError">
+                            {{  formError.student_id}}
+                        </span>
                     </div>
                     <div class="form-group ">
                         <label for="inputPassword6">Name</label>
                         <input class="form-control input-sm" type="text" v-model="student.name" >
+                        <span class="text-danger" v-show="checkError">
+                            {{  formError.name}}
+                        </span>
 
                     </div>
                     <div class="form-group ">
                         <label for="inputPassword6">Email</label>
                         <input class="form-control input-sm" type="text" v-model="student.email">
-
+                        <span class="text-danger" v-show="checkError">
+                            {{  formError.email}}
+                        </span>
                     </div>
                     <div class="form-group" >
                         <label >Major:</label>
-
                         <select title="Pick a number" class="form-control"  v-model="student.major" >
                             <option  v-for="m in majors" :value="m.id">{{m.name}}</option>
-
                         </select>
+                        <span class="text-danger" v-show="checkError">
+                            {{  formError.major}}
+                        </span>
                     </div>
                     <div class="form-group ">
                         <label for="inputPassword6">Password</label>
-                        <input class="form-control input-sm" type="text" v-model="student.password" name="password">
+                        <input class="form-control input-sm" type="password" v-model="student.password" name="password">
+                        <span class="text-danger" v-show="checkError">
+                            {{  formError.password}}
+                        </span>
                     </div>
                     <div class="form-group ">
                         <label for="inputPassword6">Photo</label>
                         <input class="form-control input-sm" type="file"  ref="file" @change="chooseFile()">
+                        <span class="text-danger" v-show="checkError">
+                            {{  formError.photo}}
+                        </span>
                     </div>
                     <div class="form-group  ">
-                        <button class="btn btn-success  "  type="submit"  @click="store" v-show="!editForm">Create..</button>
+                        <button class="btn btn-success " v-show="!editForm">Create..</button>
                     </div>
                 </form>
             </div>
@@ -72,12 +86,16 @@
 <script>
     import axios from 'axios'
     export default {
-        props:['majors'],
+        props:{
+            majors:{},
+        },
         data(){
             return {
                 editForm:false,
 
                 students:[],
+                formError:[],
+                checkError:false,
                 student:{
                     student_id:'',
                     name:'',
@@ -103,12 +121,13 @@
                 // formData.append('file',this.photo);
                 formData.append('photo',this.student.photo);
                 formData.append('name',this.student.name);
+                formData.append('major',this.student.major);
                 formData.append('student_id',this.student.student_id);
                 formData.append('email',this.student.email);
                 formData.append('password',this.student.password);
                  var vm=this;
                  // var data=this.student;
-                 // console.log(data);
+                // console.log(formData);
                  axios.post('/student/store',formData,
                      {
                          headers: {
@@ -117,9 +136,21 @@
                          }
                      }
                  ).then(function (response) {
-                     console.log(response.data);
+                     // console.log(response.data.errors);
+                     if(response.data.is_success==false){
+                         vm.checkError=true;
+                         vm.formError=response.data.errors;
+                         // alert(vm.formError.name)
+                         // console.log('Error is '  + vm.formError.name);
+                     }
+                 },function (response) {
+                     // console.log(response);
+                 }).catch(error=>{
+                     // console.log(error.response.data);
                  });
 
+            },
+            update(){
             }
 
         },
