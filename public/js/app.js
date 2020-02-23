@@ -1995,6 +1995,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+ // import image from "assets/image/default.png";
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
@@ -2004,26 +2009,37 @@ __webpack_require__.r(__webpack_exports__);
     return {
       editForm: false,
       students: [],
+      url: null,
       formError: [],
       checkError: false,
+      selectedMajor: '',
       student: {
         student_id: '',
         name: '',
         email: '',
         password: '',
         photo: '',
-        major: ''
+        major_id: ''
       }
     };
   },
   methods: {
+    showData: function showData() {
+      var _this = this;
+
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('/student/get_data').then(function (data) {
+        return _this.students = data.data;
+      });
+    },
     toggleModal: function toggleModal() {
       $('#myModal').modal('show');
     },
-    chooseFile: function chooseFile(event) {
+    chooseFile: function chooseFile(e) {
       // console.log('b is ' + event.target.files[0]);
       // this.photo = event.target.files[0];
-      this.student.photo = this.$refs.file.files[0];
+      // this.student.photo=this.$refs.file.files[0];
+      this.student.photo = e.target.files[0];
+      this.url = URL.createObjectURL(this.student.photo); // this.url = URL.createObjectURL(this.student.photo);
     },
     store: function store() {
       // alert('aaa');
@@ -2031,7 +2047,7 @@ __webpack_require__.r(__webpack_exports__);
 
       formData.append('photo', this.student.photo);
       formData.append('name', this.student.name);
-      formData.append('major', this.student.major);
+      formData.append('major', this.student.major_id);
       formData.append('student_id', this.student.student_id);
       formData.append('email', this.student.email);
       formData.append('password', this.student.password);
@@ -2047,17 +2063,31 @@ __webpack_require__.r(__webpack_exports__);
         // console.log(response.data.errors);
         if (response.data.is_success == false) {
           vm.checkError = true;
-          vm.formError = response.data.errors; // alert(vm.formError.name)
-          // console.log('Error is '  + vm.formError.name);
+          vm.formError = response.data.errors;
         }
-      }, function (response) {// console.log(response);
-      })["catch"](function (error) {// console.log(error.response.data);
+
+        vm.showData();
+        vm.student = '';
+        vm.url = null;
       });
     },
-    update: function update() {}
+    edit: function edit(st_id) {
+      this.editForm = true;
+      var vm = this;
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('/student/' + st_id + '/edit').then(function (response) {
+        console.log(response.data);
+        console.log(vm);
+        vm.student = response.data; // alert(response.data.major_id);
+
+        vm.selectedMajor = response.data.major_id; // vm.url=URL.createObjectURL( response.data.photo);
+      });
+    },
+    update: function update() {
+      console.log(this.student);
+    }
   },
-  mounted: function mounted() {
-    console.log('mounted');
+  created: function created() {
+    this.showData();
   }
 });
 
@@ -2658,9 +2688,7 @@ var render = function() {
           },
           [
             _c("div", { staticClass: "form-group " }, [
-              _c("label", { attrs: { for: "inputPassword6" } }, [
-                _vm._v("Student_Id")
-              ]),
+              _c("label", [_vm._v("Student_Id")]),
               _vm._v(" "),
               _c("input", {
                 directives: [
@@ -2699,18 +2727,16 @@ var render = function() {
                 },
                 [
                   _vm._v(
-                    "\n                        " +
+                    "\n                            " +
                       _vm._s(_vm.formError.student_id) +
-                      "\n                    "
+                      "\n                        "
                   )
                 ]
               )
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "form-group " }, [
-              _c("label", { attrs: { for: "inputPassword6" } }, [
-                _vm._v("Name")
-              ]),
+              _c("label", [_vm._v("Name")]),
               _vm._v(" "),
               _c("input", {
                 directives: [
@@ -2749,18 +2775,16 @@ var render = function() {
                 },
                 [
                   _vm._v(
-                    "\n                        " +
+                    "\n                            " +
                       _vm._s(_vm.formError.name) +
-                      "\n                    "
+                      "\n                        "
                   )
                 ]
               )
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "form-group " }, [
-              _c("label", { attrs: { for: "inputPassword6" } }, [
-                _vm._v("Email")
-              ]),
+              _c("label", [_vm._v("Email")]),
               _vm._v(" "),
               _c("input", {
                 directives: [
@@ -2799,9 +2823,9 @@ var render = function() {
                 },
                 [
                   _vm._v(
-                    "\n                        " +
+                    "\n                            " +
                       _vm._s(_vm.formError.email) +
-                      "\n                    "
+                      "\n                        "
                   )
                 ]
               )
@@ -2817,12 +2841,11 @@ var render = function() {
                     {
                       name: "model",
                       rawName: "v-model",
-                      value: _vm.student.major,
-                      expression: "student.major"
+                      value: _vm.student.major_id,
+                      expression: "student.major_id"
                     }
                   ],
                   staticClass: "form-control",
-                  attrs: { title: "Pick a number" },
                   on: {
                     change: function($event) {
                       var $$selectedVal = Array.prototype.filter
@@ -2835,7 +2858,7 @@ var render = function() {
                         })
                       _vm.$set(
                         _vm.student,
-                        "major",
+                        "major_id",
                         $event.target.multiple
                           ? $$selectedVal
                           : $$selectedVal[0]
@@ -2843,12 +2866,25 @@ var render = function() {
                     }
                   }
                 },
-                _vm._l(_vm.majors, function(m) {
-                  return _c("option", { domProps: { value: m.id } }, [
-                    _vm._v(_vm._s(m.name))
-                  ])
-                }),
-                0
+                [
+                  _c("option", { attrs: { disabled: "", value: "" } }, [
+                    _vm._v("Please select one")
+                  ]),
+                  _vm._v(" "),
+                  _vm._l(_vm.majors, function(m) {
+                    return _c(
+                      "option",
+                      {
+                        domProps: {
+                          value: m.id,
+                          selected: _vm.student.major_id == m.id
+                        }
+                      },
+                      [_vm._v(_vm._s(m.name))]
+                    )
+                  })
+                ],
+                2
               ),
               _vm._v(" "),
               _c(
@@ -2866,18 +2902,16 @@ var render = function() {
                 },
                 [
                   _vm._v(
-                    "\n                        " +
+                    "\n                            " +
                       _vm._s(_vm.formError.major) +
-                      "\n                    "
+                      "\n                        "
                   )
                 ]
               )
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "form-group " }, [
-              _c("label", { attrs: { for: "inputPassword6" } }, [
-                _vm._v("Password")
-              ]),
+              _c("label", [_vm._v("Password")]),
               _vm._v(" "),
               _c("input", {
                 directives: [
@@ -2916,28 +2950,26 @@ var render = function() {
                 },
                 [
                   _vm._v(
-                    "\n                        " +
+                    "\n                            " +
                       _vm._s(_vm.formError.password) +
-                      "\n                    "
+                      "\n                        "
                   )
                 ]
               )
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "form-group " }, [
-              _c("label", { attrs: { for: "inputPassword6" } }, [
-                _vm._v("Photo")
-              ]),
+              _vm.url
+                ? _c("img", {
+                    staticClass: "img-fluid",
+                    attrs: { src: _vm.url, width: "100px", height: "100px" }
+                  })
+                : _vm._e(),
               _vm._v(" "),
               _c("input", {
                 ref: "file",
-                staticClass: "form-control input-sm",
-                attrs: { type: "file" },
-                on: {
-                  change: function($event) {
-                    return _vm.chooseFile()
-                  }
-                }
+                attrs: { name: "file", type: "file" },
+                on: { change: _vm.chooseFile }
               }),
               _vm._v(" "),
               _c(
@@ -2955,9 +2987,9 @@ var render = function() {
                 },
                 [
                   _vm._v(
-                    "\n                        " +
+                    "\n                            " +
                       _vm._s(_vm.formError.photo) +
-                      "\n                    "
+                      "\n                        "
                   )
                 ]
               )
@@ -2978,13 +3010,66 @@ var render = function() {
                   staticClass: "btn btn-success "
                 },
                 [_vm._v("Create..")]
+              ),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.editForm,
+                      expression: "editForm"
+                    }
+                  ],
+                  staticClass: "btn btn-success "
+                },
+                [_vm._v("Update..")]
               )
             ])
           ]
         )
       ]),
       _vm._v(" "),
-      _vm._m(0)
+      _c("div", { staticClass: "col-md-8" }, [
+        _c("table", { staticClass: "table" }, [
+          _vm._m(0),
+          _vm._v(" "),
+          _c(
+            "tbody",
+            _vm._l(_vm.students, function(st) {
+              return _c("tr", { key: st.id }, [
+                _c("td", [_vm._v(_vm._s(st.name))]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(st.major.name))]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(st.email))]),
+                _vm._v(" "),
+                _c("td", [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-primary",
+                      on: {
+                        click: function($event) {
+                          return _vm.edit(st.id)
+                        }
+                      }
+                    },
+                    [_vm._v("Edit")]
+                  ),
+                  _vm._v(" "),
+                  _c("button", { staticClass: "btn btn-danger" }, [
+                    _vm._v("Delete")
+                  ])
+                ])
+              ])
+            }),
+            0
+          )
+        ])
+      ])
     ])
   ])
 }
@@ -2993,43 +3078,15 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-8" }, [
-      _c("table", { staticClass: "table" }, [
-        _c("thead", [
-          _c("tr", [
-            _c("th", [_vm._v("Firstname")]),
-            _vm._v(" "),
-            _c("th", [_vm._v("Lastname")]),
-            _vm._v(" "),
-            _c("th", [_vm._v("Email")]),
-            _vm._v(" "),
-            _c("th", [_vm._v("Action")])
-          ])
-        ]),
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("Name")]),
         _vm._v(" "),
-        _c("tbody", [
-          _c("tr", [
-            _c("td", [_vm._v("John")]),
-            _vm._v(" "),
-            _c("td", [_vm._v("Doe")]),
-            _vm._v(" "),
-            _c("td", [_vm._v("john@example.com")]),
-            _vm._v(" "),
-            _c("td", [
-              _c(
-                "button",
-                { staticClass: "btn btn-primary", attrs: { type: "submit" } },
-                [_vm._v("Edit")]
-              ),
-              _vm._v(" "),
-              _c(
-                "button",
-                { staticClass: "btn btn-danger", attrs: { type: "submit" } },
-                [_vm._v("Edit")]
-              )
-            ])
-          ])
-        ])
+        _c("th", [_vm._v("Major")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Email")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Action")])
       ])
     ])
   }

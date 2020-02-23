@@ -4,14 +4,14 @@
             <div class="col-md-4">
                 <form v-on:submit.prevent="!editForm ? store() : update()" enctype="multipart/form-data">
                     <div class="form-group ">
-                        <label for="inputPassword6">Student_Id</label>
+                        <label >Student_Id</label>
                         <input class="form-control input-sm" type="text" v-model="student.student_id" name="student_id">
                         <span class="text-danger" v-show="checkError">
                             {{  formError.student_id}}
                         </span>
                     </div>
                     <div class="form-group ">
-                        <label for="inputPassword6">Name</label>
+                        <label >Name</label>
                         <input class="form-control input-sm" type="text" v-model="student.name" >
                         <span class="text-danger" v-show="checkError">
                             {{  formError.name}}
@@ -19,37 +19,41 @@
 
                     </div>
                     <div class="form-group ">
-                        <label for="inputPassword6">Email</label>
+                        <label >Email</label>
                         <input class="form-control input-sm" type="text" v-model="student.email">
                         <span class="text-danger" v-show="checkError">
                             {{  formError.email}}
                         </span>
                     </div>
-                    <div class="form-group" >
+                    <div class="form-group">
                         <label >Major:</label>
-                        <select title="Pick a number" class="form-control"  v-model="student.major" >
-                            <option  v-for="m in majors" :value="m.id">{{m.name}}</option>
+                        <select  class="form-control"  v-model="student.major_id">
+                            <option disabled value="">Please select one</option>
+                            <option  v-for="m in majors" :value="m.id" :selected="student.major_id == m.id">{{m.name}}</option>
                         </select>
                         <span class="text-danger" v-show="checkError">
                             {{  formError.major}}
                         </span>
                     </div>
                     <div class="form-group ">
-                        <label for="inputPassword6">Password</label>
+                        <label>Password</label>
                         <input class="form-control input-sm" type="password" v-model="student.password" name="password">
                         <span class="text-danger" v-show="checkError">
                             {{  formError.password}}
                         </span>
                     </div>
                     <div class="form-group ">
-                        <label for="inputPassword6">Photo</label>
-                        <input class="form-control input-sm" type="file"  ref="file" @change="chooseFile()">
+<!--                        <img :src="'../image/default.png'" class="image" width="100px" height="100px">-->
+                        <img v-if="url" :src="url" class="img-fluid"  width="100px" height="100px">
+<!--                        <label >Photo</label>-->
+                        <input  name="file" type="file"  ref="file" @change="chooseFile">
                         <span class="text-danger" v-show="checkError">
                             {{  formError.photo}}
                         </span>
                     </div>
                     <div class="form-group  ">
                         <button class="btn btn-success " v-show="!editForm">Create..</button>
+                        <button class="btn btn-success " v-show="editForm">Update..</button>
                     </div>
                 </form>
             </div>
@@ -57,20 +61,20 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th>Firstname</th>
-                        <th>Lastname</th>
+                        <th>Name</th>
+                        <th>Major</th>
                         <th>Email</th>
                         <th>Action</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr >
-                        <td>John</td>
-                        <td>Doe</td>
-                        <td>john@example.com</td>
+                    <tr v-for="st in students" :key="st.id">
+                        <td>{{st.name}}</td>
+                        <td>{{st.major.name   }}</td>
+                        <td>{{st.email}}</td>
                         <td>
-                            <button type="submit" class="btn btn-primary">Edit</button>
-                            <button type="submit" class="btn btn-danger">Edit</button>
+                            <button  class="btn btn-primary" @click="edit(st.id)">Edit</button>
+                            <button  class="btn btn-danger">Delete</button>
                         </td>
                     </tr>
 
@@ -84,7 +88,8 @@
     </div>
 </template>
 <script>
-    import axios from 'axios'
+    import axios from 'axios';
+    // import image from "assets/image/default.png";
     export default {
         props:{
             majors:{},
@@ -94,26 +99,35 @@
                 editForm:false,
 
                 students:[],
+                url:null,
                 formError:[],
                 checkError:false,
+                selectedMajor:'',
                 student:{
                     student_id:'',
                     name:'',
                     email:'',
                     password:'',
                     photo:'',
-                    major:'',
+                    major_id:'',
                 },
             }
         },
+
         methods:{
+            showData(){
+                axios.get('/student/get_data').then(data=>(this.students=data.data));
+            },
             toggleModal(){
                 $('#myModal').modal('show');
             },
-            chooseFile(event){
+            chooseFile(e){
                 // console.log('b is ' + event.target.files[0]);
                 // this.photo = event.target.files[0];
-                this.student.photo=this.$refs.file.files[0];
+                // this.student.photo=this.$refs.file.files[0];
+                  this.student.photo = e.target.files[0];
+                this.url = URL.createObjectURL( this.student.photo);
+                // this.url = URL.createObjectURL(this.student.photo);
             },
             store(){
               // alert('aaa');
@@ -121,7 +135,7 @@
                 // formData.append('file',this.photo);
                 formData.append('photo',this.student.photo);
                 formData.append('name',this.student.name);
-                formData.append('major',this.student.major);
+                formData.append('major',this.student.major_id);
                 formData.append('student_id',this.student.student_id);
                 formData.append('email',this.student.email);
                 formData.append('password',this.student.password);
@@ -140,22 +154,33 @@
                      if(response.data.is_success==false){
                          vm.checkError=true;
                          vm.formError=response.data.errors;
-                         // alert(vm.formError.name)
-                         // console.log('Error is '  + vm.formError.name);
-                     }
-                 },function (response) {
-                     // console.log(response);
-                 }).catch(error=>{
-                     // console.log(error.response.data);
-                 });
 
+                     }
+                     vm.showData();
+                     vm.student='';
+                     vm.url=null;
+                 });
+            },
+            edit(st_id){
+                this.editForm=true;
+                var vm=this;
+                axios.get('/student/'+st_id+'/edit').then(function (response) {
+                    console.log(response.data);
+                    console.log(vm);
+                    vm.student=response.data;
+                    // alert(response.data.major_id);
+                    vm.selectedMajor=response.data.major_id;
+                    // vm.url=URL.createObjectURL( response.data.photo);
+                });
             },
             update(){
+                console.log(this.student);
             }
 
         },
-        mounted() {
-            console.log('mounted');
-        }
-    }
+        created() {
+            this.showData();
+        },
+
+    };
 </script>

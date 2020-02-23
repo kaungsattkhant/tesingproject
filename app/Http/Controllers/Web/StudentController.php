@@ -16,7 +16,7 @@ class StudentController extends Controller
         return view('Student.student_create',compact('majors'));
     }
     public function getData(){
-        $data=Student::all();
+        $data=Student::with('major')->get();
         return $data;
 //        return response()->json($data);
     }
@@ -28,7 +28,7 @@ class StudentController extends Controller
             'student_id'=>'required',
             'email'=>'required',
             'password'=>'required',
-            'photo'=>'required',
+//            'photo'=>'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 //        $vd=$this->validate($request,[
 //            'name'=>'required',
@@ -40,10 +40,11 @@ class StudentController extends Controller
 //        ]);
         $photo=$request->file('photo');
         if($photo){
-            $photoname=time().'.'.$photo->getClientOriginalExtension();
+            $photoname=rand(1,6).'_'.time().'.'.$photo->getClientOriginalExtension();
             $destination_path=storage_path('/image');
             $photo->move($destination_path,$photoname);
         }
+//        dd($photoname);
         if($vd->passes()){
             $st=Student::create([
                 'student_id'=>$request->student_id,
@@ -110,5 +111,9 @@ class StudentController extends Controller
             'is_success'=>true,
 
         ]);
+    }
+    public function getImage($name)
+    {
+        return response()->download(storage_path().'/image/'.$name);
     }
 }
